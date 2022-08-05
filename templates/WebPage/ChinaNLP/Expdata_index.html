@@ -1,0 +1,155 @@
+{% extends 'WebPage/base.html' %}
+{% load static from static %}
+{% block main_body %}
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<!--页面主要内容-->
+    <main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <form class="pull-right search-bar" method="get" action="#!" role="form">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <input type="hidden" name="search_field" id="search-field" value="title">
+                      <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                      文件名 <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="title">文件名</a> </li>
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="cat_name">时 间</a> </li>
+                      </ul>
+                    </div>
+                    <input type="text" class="form-control" value="" name="keyword" placeholder="请输入名称">
+                  </div>
+                </form>
+
+                <div class="toolbar-btn-action">
+                  <a class="btn btn-primary m-r-5" href="{% url 'Scrapy_XueXiQiangGuo_Index' %}"><i class="mdi mdi-plus"></i> 新增</a>
+
+                  <button class="btn btn-danger" type="button" id="delSelect" name="delSelect" ><i class="mdi mdi-window-close"></i> 删除</button>
+                </div>
+              </div>
+              <div class="card-body" id="scrapy_group" >
+
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input type="checkbox" id="check-all"><span></span>
+                          </label>
+                        </th>
+                        <th>编号</th>
+                        <th>操作时间</th>
+                        <th>文章内容</th>
+                        <th>类别</th>
+                        <th>结果</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in datalist %}
+                        <tr>
+                        <td>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input type="checkbox" name="ids[]" value="{{data.filename}}"><span></span>
+                          </label>
+                        </td>
+                        <td>{{data.id}}</td>
+                        <td>{{data.create_at}}</td>
+                        <td>{{data.content| slice:":100"}}……</td>
+                          {% if data.type == 0 %}
+                        <td><span style="color:green">标题</span></td>
+                          {% elif data.type == 1 %}
+                          <td><span style="color:blue">摘要</span></td>
+                          {% elif data.type == 3 %}
+                          <td><span style="color:orange">会议</span></td>
+                          {% else %}
+                          <td><span style="color:red">讲话</span></td>
+                          {% endif %}
+                          <td>{{data.result}}</td>
+                        <td>
+
+                          <div class="btn-group">
+                            <a class="btn btn-xs btn-default" href="" download="" title="下载" data-toggle="tooltip" ><i class="mdi mdi-arrow-down-box"></i></a>
+                            <button class="btn btn-xs btn-default" onclick="del('{{data.id}}')" id="del" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></button>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <ul class="pagination">
+                  <li class="disabled"><span>«</span></li>
+                  <li class="active"><span>1</span></li>
+
+                </ul>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+    <!--End 页面主要内容-->
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script>
+  //删除指定元素
+  function del(filename){
+    //提交数据到后台进行删除
+    $.ajax({
+      url:'/scrapy_data_del_one',
+      type:'post',
+      headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'filename':filename},
+        success:function(data){
+            layer.msg(data.status,{icon:1});
+            location.href="/show_scrapy_data";
+        },
+        error:function(data){
+            layer.msg(data.status,{icon:2});
+            location.href="/show_scrapy_data";
+        },
+    });
+  };
+
+//删除复选框选中的元素
+$('#delSelect').on('click',function(){
+  var filenames=[];
+  $('#scrapy_group').find('input[type=checkbox]').each(function(){
+    if($(this).prop("checked")){
+      var filename=$(this).val();
+      filenames.push(filename);
+    }
+  })
+  console.log(filenames);//控制台输出查看正确与否
+  //传输值到后台Ajax
+  $.ajax({
+    url:'scrapydata_delSelect',
+     type:'POST',
+    headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'filenames':filenames},
+        dataType:'JSON',
+        traditional:true,
+        success:function(data){
+            layer.msg('删除成功',{icon:1,time:3000,shade:0.4},function() {
+                            location.href = "/show_scrapy_data";
+            });
+        }
+    });
+
+
+
+})
+</script>
+
+{% endblock %}

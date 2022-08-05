@@ -1,0 +1,58 @@
+{% extends 'WebPage/base.html' %}
+{% load static from static %}
+{% block main_body %}
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+<main class="lyear-layout-content">
+
+
+               <!--卡片效果-->
+                {% for data in datalist %}
+                <div class="col-sm-6 col-lg-3">
+                      <div class="card">
+                    <div class="card-header bg-primary">
+                      <h4>{{data.title}}</h4>
+                      <ul class="card-actions">
+                        <li>
+                          <button type="button" data-toggle="tooltip" data-placement="top"  title="更新时间：{{data.update_at}}"><i class="mdi mdi-more"></i></button>
+                          <a type="button" data-toggle="tooltip" data-placement="top" id="edit" title="编辑" href="{% url 'writer_edit_article' data.article_id %}"><i class="mdi mdi-tooltip-edit"></i></a>
+                          <a type="button" data-toggle="tooltip" data-placement="top" id="download" title="下载" href="{% url 'writer_download_article' data.article_id %}"><i class="mdi mdi-arrow-down-box"></i></a>
+                          <button type="button" data-toggle="tooltip" data-placement="top" id="del" title="删除" onclick="del('{{data.article_id}}')"><i class="mdi mdi-delete"></i></button>
+
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="card-body">
+                      <p>{{data.content| slice:":135"}}……</p>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+    </main>
+<!--删除，修改操作-->
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script>
+//删除指定元素
+function del(article_id){
+    //提交数据到后台进行删除
+    $.ajax({
+        url:'/writer_del_article',
+        type:'post',
+        headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'article_id':article_id},
+        success:function(data){
+            layer.msg(data.status,{icon:1});
+            location.href="/article_index";
+        },
+        error:function(data){
+            layer.msg(data.status,{icon:2});
+            location.href="/article_index";
+        },
+    });
+};
+
+
+
+</script>
+
+{% endblock %}

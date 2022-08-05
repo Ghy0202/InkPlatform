@@ -1,0 +1,254 @@
+{% extends 'WebPage/base.html' %}
+{% load static from static %}
+{% block main_body %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
+<link href="{% static 'WebPage/Markdown/github_light_theme.css' %}" rel="stylesheet"/>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+<style>
+
+        .mk-editor{
+            margin: 0;padding: 6px;border: 0;height: 630px;display: flex;justify-content: space-between;
+            box-shadow: 0 0 5px #acc;
+        }
+        .mk-editor > *{
+            display: block!important;
+            width: calc(50% - 5px)!important;
+            height: 600px!important;word-wrap: break-word;
+            overflow-y: scroll;padding: 10px;
+        }
+        #editor-edit {font-size: 15px;font-weight: 300;outline: none;}
+        </style>
+<main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+
+            <div class="card" >
+              <div class="card-body">
+                  <label>标题</label>
+                  <input class="form-control" type="text" id="title" name="example-text-input-info" placeholder="输入标题" value="{{data.title}}">
+                  <label>摘要</label>
+                  <input id="article_id" type="hidden" value="{{data.article_id}}">
+                  <input class="form-control" type="text" id="abstract" name="example-text-input-info" placeholder="输入摘要" value="{{data.abstract}}">
+                  <div><br></div>
+                <div class="toolbar-btn-action">
+                  {% csrf_token %}
+                  <button class="btn btn-primary m-r-5" id="generate_title" type="button"><i class="mdi mdi-check"></i>生成标题</button>
+                  {% csrf_token %}
+                  <button class="btn btn-success m-r-5" id="generate_abstract" type="button"><i class="mdi mdi-check"></i>生成摘要</button>
+                  {% csrf_token %}
+                  <button class="btn btn-warning m-r-5" id="save" type="button"><i class="mdi mdi-plus"></i>更新文章</button>
+                </div>
+                    <div></br></div>
+                <div class="mk-editor">
+                     {% csrf_token %}
+                    <textarea id="editor-edit" class="cur" placeholder="支持markdown语法，开启你的创作之旅吧……" maxlength="1150" name="content">{{data.content}}</textarea>
+
+                     {% csrf_token %}
+                    <div id="editor-show" class="markdown-body"></div>
+                </div>
+
+              </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+
+
+    </main>
+<!--模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"  aria-hidden="true" data-backdrop="true" >
+		<div class="modal-dialog" style="display: outline-block;"><span style="font-family: Arial, Helvetica, sans-serif;"><!--设置模态框属性--></span>
+
+			<div class="modal-content" style="width: 400px;height: 200px;margin-top: 220px;margin-left: 130px;"><!--设置模态框content属性-->
+				<div class="modal-header" style="text-align:left;font-size: small;height: 8px;margin-bottom: 5px;">
+					<!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						×
+					</button>-->
+					<p style="margin-top: -10px;">Tips</p>
+				</div>
+				<div class="modal-body" style="text-align: center;font-size: large;height: 18px;">
+                    <img src="{% static 'WebPage/images/loading.gif' %}" style="zoom:10%;">
+					<p style="margin-top: -15px;">正在全力为您加载，请耐心等待...</p>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal -->
+	</div>
+<!--markdown语法-->
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script>
+
+
+        let converter = new showdown.Converter(),
+            container_edit = document.getElementById("editor-edit"),
+            container_show = document.getElementById("editor-show");
+
+        // 将输入框中的 markdown 语句 转换为html 输出到 预览容器中
+        let translation = (function () {
+            return function () {
+                container_show.innerHTML = converter.makeHtml(container_edit.value);
+                // 按比例调整 预览容器 的滚动条位置
+                let ratio = container_edit.scrollTop/container_edit.scrollHeight;
+                container_show.scrollTop = container_show.scrollHeight*ratio;
+            }
+        })();
+
+        // 监听输入框输入，实时将输入内容同步的右侧 预览框
+        container_edit.onkeyup = translation;
+
+        //监听鼠标进入 输入框范围 设置状态
+        container_edit.onmouseover = function(){
+            container_show.classList.remove('cur');
+            container_edit.classList.add('cur');
+        };
+        //监听鼠标离开 输入框范围 设置状态
+        container_edit.onmouseleave = function(){
+            container_edit.classList.remove('cur')
+        };
+        //监听鼠标进入 预览容器范围 设置状态
+        container_show.onmouseover = function(){
+            container_edit.classList.remove('cur')
+            container_show.classList.add('cur');
+        };
+        //监听鼠标离开 预览容器范围 设置状态
+        container_show.onmouseleave = function(){
+            container_show.classList.remove('cur')
+        };
+
+        // 监听 输入框 内容滚动
+        container_edit.addEventListener('scroll',function(){
+            // 若鼠标在 输入框范围内 则 以输入框为主 同步 预览容器内容滚动条高度
+            if(hasClass(container_edit, "cur")){
+                let ratio = container_edit.scrollTop/container_edit.scrollHeight;
+                container_show.scrollTop = container_show.scrollHeight*ratio;
+            }
+        });
+        // 监听 预览容器 内容滚动
+        container_show.addEventListener('scroll',function(){
+            // 若鼠标在 预览范围内 则 以 预览容器为主 同步 输入框内容滚动条高度
+            if(hasClass(container_show, "cur")){
+                let ratio = container_show.scrollTop/container_show.scrollHeight;
+                container_edit.scrollTop = container_edit.scrollHeight*ratio;
+            }
+        });
+
+        // 判断 dom对象是否含有 指定 class 属性
+        var hasClass = (function(){
+            var div = document.createElement("div") ;
+            if( "classList" in div && typeof div.classList.contains === "function" ) {
+                return function(elem, className){
+                    return elem.classList.contains(className) ;
+                } ;
+            } else {
+                return function(elem, className){
+                    var classes = elem.className.split(/\s+/) ;
+                    for(var i= 0 ; i < classes.length ; i ++) {
+                        if( classes[i] === className )return true ;
+                    }
+                    return false ;
+                } ;
+            }
+        })() ;
+
+//Ajax传输数据
+
+//生成标题
+$('#generate_title').click(function(){
+    var content = $("#editor-edit").val();
+    $.ajax({
+        url:'/writer_generate_t5_title',
+        type:'post',
+        headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'text':content},
+        beforeSend: function(){       //ajax发送请求时的操作，得到请求结果前有效
+						$('#myModal').modal({
+							backdrop:'static'      //<span style="color:#FF6666;">设置模态框之外点击无效</span>
+						});
+						$('#myModal').modal('show');   //弹出模态框
+					},
+					complete: function(){            //ajax得到请求结果后的操作
+						$('#myModal').modal('hide');  //隐藏模态框
+		},
+        success:function(data){
+
+                $("#title").val(data.title);
+
+                layer.msg(data.status,{icon:1});
+
+        }
+    });
+  });
+//生成摘要
+$('#generate_abstract').click(function(){
+    var content = $("#editor-edit").val();
+    $.ajax({
+        url:'/writer_generate_t5_abstract',
+        type:'post',
+        headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'text':content},
+        beforeSend: function(){       //ajax发送请求时的操作，得到请求结果前有效
+						$('#myModal').modal({
+							backdrop:'static'      //<span style="color:#FF6666;">设置模态框之外点击无效</span>
+						});
+						$('#myModal').modal('show');   //弹出模态框
+					},
+					complete: function(){            //ajax得到请求结果后的操作
+						$('#myModal').modal('hide');  //隐藏模态框
+		},
+        success:function(data){
+
+
+                $("#abstract").val(data.abstract);
+                console.log(data);
+                layer.msg(data.status,{icon:1});
+        }
+    });
+  });
+//更新写作内容
+$('#save').click(function(){
+
+    var content = $("#editor-edit").val();
+    var title=$('#title').val();
+    var abstract=$('#abstract').val();
+    var article_id=$('#article_id').val();
+    alert("确定更新？");
+    $.ajax({
+        url:'/writer_update',
+        type:'post',
+        headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'content':content,'title':title,'abstract':abstract,'article_id':article_id},
+        beforeSend: function(){       //ajax发送请求时的操作，得到请求结果前有效
+						$('#myModal').modal({
+							backdrop:'static'      //<span style="color:#FF6666;">设置模态框之外点击无效</span>
+						});
+						$('#myModal').modal('show');   //弹出模态框
+					},
+					complete: function(){            //ajax得到请求结果后的操作
+						$('#myModal').modal('hide');  //隐藏模态框
+		},
+
+        success:function(data){
+
+            layer.msg('更新成功',{icon:1,time:3000,shade:0.4},function() {
+                            location.href = "/article_index";
+            });
+        }
+
+    });
+  });
+
+
+
+
+
+    </script>
+
+
+{% endblock %}

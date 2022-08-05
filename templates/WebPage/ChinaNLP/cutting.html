@@ -1,0 +1,85 @@
+{% extends 'homepage/base.html' %}
+
+{% block main_body %}
+<main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <!--提交表单-->
+                <form action="{% url 'homepage_docutting' %}" method="post" class="row">
+                    {% csrf_token %}
+                  <div class="form-group col-md-12">
+                    <label for="seo_description">输入一段中文句子</label>
+                    <textarea class="form-control" id="seo_description" name="sentence" rows="5" type="text" placeholder="例句：今天是个好天气！"></textarea>
+                  </div>
+
+                  <div class="form-group col-md-12">
+                    <button type="submit" class="btn btn-primary ajax-post" target-form="add-form">确 定</button>
+                    <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);return false;">返 回</button>
+                  </div>
+                </form>
+              </div>
+              <!--展示分词结果-->
+               <div class="col-sm-6 col-lg-3">
+            <div class="card">
+              <div class="card-header bg-primary">
+                <h4>原始句子</h4>
+                <ul class="card-actions">
+                  <li>
+                    <a type="button" ><i class="mdi mdi-more"></i></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <p>{{sentence}}</p>
+              </div>
+            </div>
+          </div>
+
+              <div class="col-sm-6 col-lg-3">
+            <div class="card">
+              <div class="card-header bg-info">
+                <h4>Snow_NLP @ 分词结果</h4>
+                <ul class="card-actions">
+                  <li>
+                    <a type="button" href="https://pypi.org/project/snownlp/"><i class="mdi mdi-more"></i></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <p>{{snow_cut}}</p>
+              </div>
+            </div>
+          </div>
+
+              <div class="col-sm-6 col-lg-3">
+            <div class="card">
+              <div class="card-header bg-danger">
+                <h4>Jieba @ 分词结果</h4>
+                <ul class="card-actions">
+                  <li>
+                    <a type="button" href="https://pypi.org/project/jieba/"><i class="mdi mdi-more"></i></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <p>{{jieba_cut}}</p>
+              </div>
+            </div>
+          </div>
+
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+{% endblock %}

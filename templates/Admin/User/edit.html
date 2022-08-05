@@ -1,0 +1,116 @@
+{% extends 'Admin/baseLeft.html' %}
+{% load static from static %}
+{% block main_body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户</title>
+  <link rel="stylesheet" href="{% static 'Admin/lib/layui-v2.6.3/css/layui.css'%}" media="all">
+  <link rel="stylesheet" href="{% static 'Admin/css/public.css' %}" media="all">
+    <script src="{% static 'Admin/lib/jquery-3.4.1/jquery-3.4.1.min.js' %}"></script>
+  <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+    <!--获取当前页面的值-->
+    <script>
+
+
+    </script>
+</head>
+<body>
+<div style="width: 650px; position: relative;top:auto; left:25%;">
+<div class="layui-form layuimini-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">用户名</label>
+        <div class="layui-input-block">
+            <input type="email" name="username"  disabled="disabled" lay-verify="required" lay-reqtext="用户名不能为空" placeholder="请输入用户名" value="{{username}}" class="layui-input">
+            <tip>帐号必须为合法邮箱</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">权限</label>
+        <div class="layui-input-block">
+            {% if state == '0' %}
+            <input type="radio" name="state" value="0" title="普通" checked="">
+            <input type="radio" name="state" value="6" title="管理员">
+            {% endif %}
+            {% if state == '6' %}
+            <input type="radio" name="state" value="0" title="普通" >
+            <input type="radio" name="state" value="6" title="管理员" checked="">
+            {% endif %}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">原始密码</label>
+        <div class="layui-input-block">
+            <input type="password" name="pwd" lay-verify="required" lay-reqtext="密码不能为空" placeholder="请输入原始密码" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">新密码</label>
+        <div class="layui-input-block">
+            <input type="password" name="new_pwd" lay-verify="required" lay-reqtext="密码不能为空" placeholder="请输入新密码" value="" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认修改</button>
+        </div>
+    </div>
+</div>
+</div>
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script>
+
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var index = layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            }, function () {
+                //将信息提交给后台
+                $.ajax({
+                    type:"post",
+					dataType:'html',
+					headers:{'X-CSRFToken': "{{ csrf_token }}"},
+					data:JSON.stringify(data.field),
+					contentType:'application/json',
+					url:"{% url 'MyAdmin:do_user_edit' %}",
+					error:function(XMLHttpRequest,textStatus,errorThrown){
+						layer.msg('修改失败');
+						layer.msg(XMLHttpRequest.status+XMLHttpRequest.readyState);
+
+					},
+					success:function(data){
+						layer.msg('修改成功',{icon:1,time:3000,shade:0.4},function() {
+                            location.href = "/admin/admin_userInfo/";
+                        });
+
+					}
+				});
+                // 关闭弹出层
+                layer.close(index);
+
+                var iframeIndex = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(iframeIndex);
+
+            });
+
+            return false;
+        });
+
+    });
+</script>
+
+</body>
+</html>
+{% endblock %}

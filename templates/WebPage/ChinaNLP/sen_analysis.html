@@ -1,0 +1,76 @@
+{% extends 'homepage/base.html' %}
+
+{% block main_body %}
+<main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <!--提交表单-->
+                <form action="{% url 'homepage_dochina_sen_analysis' %}" method="post" class="row">
+                    {% csrf_token %}
+                  <div class="form-group col-md-12">
+                    <label for="seo_description">输入一段中文句子</label>
+                    <textarea class="form-control" id="seo_description" name="sentence" rows="5" type="text" placeholder="例句：今天是个好天气！"></textarea>
+                  </div>
+
+                  <div class="form-group col-md-12">
+                    <button type="submit" class="btn btn-primary ajax-post" target-form="add-form">确 定</button>
+                    <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);return false;">返 回</button>
+                  </div>
+                </form>
+              </div>
+              </div>
+              <!--展示词性分析结果-->
+              <div class="card">
+                  <div class="card-body">
+                      <label>原始句子</label>
+                      <p>{{sentence}}</p>
+                  </div>
+              </div>
+            <div class="card">
+                <label>&ensp;&ensp;&ensp;情感分析结果</label>
+              <div class="card-body">
+
+              <div class="example-box">
+            <!--显示情感得分-->
+                  {% if score > 55 %}
+                <div class="progress">
+                  <div class="progress-bar progress-bar-danger" role="progressbar" style="width: {{score}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                    {{score}}%
+                  </div>
+                </div>
+                  {% elif score > 25 %}
+                  <div class="progress">
+                  <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{score}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                    {{score}}%
+                  </div>
+                </div>
+                  {% else %}
+                  <div class="progress">
+                  <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{score}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                    {{score}}%
+                  </div>
+                </div>
+
+                  {% endif %}
+              </div>
+
+              </div>
+
+
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+
+{% endblock %}

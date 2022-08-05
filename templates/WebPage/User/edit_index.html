@@ -1,0 +1,109 @@
+{% extends 'WebPage/base.html' %}
+{% load static from static %}
+{% block main_body %}
+<main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+
+                <div class="edit-avatar">
+                  <form>
+                    {% csrf_token %}
+                  <img id="avatar"src="{{avatar_path}}" alt="加载失败" onerror="this.src='{% static 'images/Avatar1.png'%}'" class="img-avatar">
+                    <label class="btn btn-default"  for="updateAvatar">修改头像</label>
+                  <input id="updateAvatar" style = "display:none" type="file" name="image" accept=".png,.jpg,.svg">
+                  <div class="avatar-divider"></div>
+                  <div class="edit-avatar-content">
+                    <p class="m-0">选择一张你喜欢的图片，上传图片大小不能超过2M。</p>
+                  </div>
+                  </form>
+                </div>
+                <hr>
+                <form method="post"  class="site-form">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label >用户名</label>
+                    <input type="text" class="form-control" name="username" id="username" value="{{username}}" disabled="disabled" />
+                  </div>
+                  <div class="form-group">
+                    <label >昵称</label>
+                    <input type="text" class="form-control" name="nickname" id="nickname" placeholder="输入您的昵称" value="{{nickname}}">
+                  </div>
+
+                  <button  id="edit" type="button" class="btn btn-primary">保存</button>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script>
+//点击上传文件即可改变
+  $('#updateAvatar').on('change',function(){
+    upload();
+    //用户最后一次选择的图片
+    var choose_file=$(this)[0].files[0];
+    //创建一个新的FileReader对象读取文件信息
+    var reader=new FileReader();
+    //读取用户上传文件的路径
+    reader.readAsDataURL(choose_file);
+
+    //读取完毕后，将图片的src属性修改成用户上传图片的本地路径
+    reader.onload=function(){
+      $('#avatar').attr("src",reader.result)
+    };
+  });
+ //上传
+ function upload(){
+  var formdata=new FormData();
+  formdata.append("avatar",$('#updateAvatar')[0].files[0]);
+  formdata.append("csrfmiddlewaretoken",$("[name='csrfmiddlewaretoken']").val());
+  $.ajax({
+    processData:false,
+                contentType:false,
+                url:'/upload_avatar',
+                type:'post',
+                data:formdata,
+                dataType:"json",
+                success:function (arg) {
+                    if (arg.state == 1){
+                        alert('上传成功！')
+                    }else {
+                        alert('上传失败！')
+                    }
+                },error: function () {
+                    alert("访问繁忙，请重试")
+                }
+
+            })
+        }
+//修改昵称
+$('#edit').click(function(){
+  var nickname=$('#nickname').val();
+  var username=$('#username').val();
+  $.ajax({
+    url:'/edit_nickname',
+    type:'post',
+    headers:{'X-CSRFToken': "{{ csrf_token }}"},
+    data:{'nickname':nickname,'username':username},
+    success:function(data){
+          layer.msg('更新成功',{icon:1,time:3000,shade:0.4},function() {
+                            location.href = "/homeIndex";})
+     }
+});
+})
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'WebPage/base.html' %}
+
+
+{% block main_body %}
+<style>
+.container {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        width: 100%;
+      }
+    input[type="file"]{
+
+            z-index: -1;
+            top: 10px;
+            left: 8px;
+            font-size: 17px;
+            color: #b8b8b8;
+          }
+    .button-wrap1 {
+            position: relative;
+          }
+      .button1 {
+        display: inline-block;
+        padding: 12px 18px;
+        cursor: pointer;
+        border-radius: 5px;
+        background-color: #8ebf42;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+      }
+      .inputFile{
+    opacity: 0;
+}
+</style>
+<!--参考博客：-->
+<main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+              {% if data == NULL %}
+            <div class="card" >
+              <div class="card-body">
+                  <label>批量生成标题：请导入CSV文件</label>
+                  <form action="{%url 'upload_csv'%}" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+
+                  <div class="container">
+                  <div class="button-wrap1">
+
+                      <label class="btn btn btn-primary" for="choose" >选择文件</label>
+                        <input id="choose" class="inputFile" type="file" accept=".csv" name="filename" onchange="fileSelected('uploadFile');"/>
+                       <!--存储的信息-->
+                      <div id="fileName"></div>
+                    <div id="fileSize"></div>
+                      <div id="fileType"></div>
+<!--                        <input type="button" class="btn btn btn-info" value="提交文件" id="uploadFile" style="display:none">-->
+                      <input type="submit" class="btn btn btn-info" value="提交文件" id="uploadFile" style="display:none">
+                      <p id="FileInfo"></p>
+
+                  </div>
+            </div>
+        </form>
+              </div>
+              </div>
+              {% endif %}
+                <!--展示结果-->
+           {% if data %}
+           <div class="card">
+
+              <div class="card-body">
+
+                <label>生成结果</label>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>序号</th>
+                      <th>生成标题</th>
+                      <th>文本</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for item in data %}
+                    <tr>
+                      <td>{{forloop.counter}}</td>
+                      <td>{{item.res_title}}</td>
+                      <td>{{item.content| slice:":100"}}······</td>
+
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+
+              </div>
+        </div>
+           {% endif %}
+            </div>
+          </div>
+
+        </div>
+
+
+
+
+
+
+
+    </main>
+<!--嵌入脚本-->
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+function fileSelected(id) {
+    var file = document.getElementById('choose').files[0];
+    if (file) {
+        var fileSize = 0;
+    if (file.size > 1024 * 1024)
+        fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+    else
+        fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+
+    document.getElementById('fileName').innerHTML = '文件名称: ' + file.name;
+    document.getElementById('fileSize').innerHTML = '文件大小: ' + fileSize;
+    document.getElementById('fileType').innerHTML = '文件类型: ' + file.type;
+    //显示提交的按钮
+    var traget=document.getElementById(id);
+        if(traget.style.display=="none"){
+            traget.style.display="";
+        }else{
+            traget.style.display="none";
+      }
+
+    }
+
+};
+$("#uploadFile").click(function(){
+    //创建对象
+    var formdata=new FormData();
+    var file_obj=$('[name=filename]')[0].files[0];
+    var csrf_data = $('[name=csrfmiddlewaretoken]').val();
+    formdata.append('file_obj',file_obj);
+    formdata.append('csrfmiddlewaretoken',csrf_data);
+    $.ajax({
+        url:'upload_csv',
+            type:'post',
+            data:formdata,
+            processData: false ,    // 不处理数据
+            contentType: false,    // 不设置内容类型
+            success:function (res) {
+                console.log(res);
+            }
+        })
+    })
+
+
+
+
+</script>
+{% endblock %}

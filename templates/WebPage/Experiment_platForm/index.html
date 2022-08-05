@@ -1,0 +1,23 @@
+{% extends 'WebPage/base.html' %}
+{% load static from static %}
+{% block main_body %}
+<!--这个是实验平台的说明界面-->
+<main class="lyear-layout-content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card" >
+              <div class="card-body">
+                  <label>新手视频</label>
+<!--插入B站视频，之后打算改成自己的视频-->
+                  <iframe src="//player.bilibili.com/player.html?aid=889608047&bvid=BV1HP4y1x7um&cid=382625588&page=1"  scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="100%" height="590" danmaku="1"> </iframe>
+                  <p>点墨是一款专注于新闻智能写作的网页</p>
+                    <p>本网页尽可以通过注册使用，所有功能均向用户开放</p>
+                    <p>期望可以为您提供最佳的写作体验</p>
+            </div>
+          </div>
+        </div>
+     </div>
+  </div>
+</main>
+{% endblock %}

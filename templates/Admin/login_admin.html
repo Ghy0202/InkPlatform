@@ -1,0 +1,445 @@
+{% load static from static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理-登陆</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="{% static 'Admin/lib/layui-v2.6.3/css/layui.css' %}" media="all">
+    <!--滑块验证 -->
+
+
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        html, body {width: 100%;height: 100%;overflow: hidden}
+        body {background: #1E9FFF;}
+        body:after {content:'';background-repeat:no-repeat;background-size:cover;-webkit-filter:blur(3px);-moz-filter:blur(3px);-o-filter:blur(3px);-ms-filter:blur(3px);filter:blur(3px);position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;}
+
+
+        html,body{
+            margin:0px;
+            width:100%;
+            height:100%;
+            overflow:hidden;
+            background: #F5F5F5;
+        }
+        #canvas{
+            position:absolute;
+            width:100%;
+            height:100%;
+        }
+
+        .layui-container {width: 100%;height: 100%;overflow: hidden}
+        .admin-login-background {width:360px;height:300px;position:absolute;left:50%;top:40%;margin-left:-180px;margin-top:-100px;}
+        .logo-title {text-align:center;letter-spacing:2px;padding:14px 0;}
+        .logo-title h1 {color:#1E9FFF;font-size:25px;font-weight:bold;}
+        .login-form {background-color:#fff;border:1px solid #fff;border-radius:3px;padding:14px 20px;box-shadow:0 0 8px #eeeeee;}
+        .login-form .layui-form-item {position:relative;}
+        .login-form .layui-form-item label {position:absolute;left:1px;top:1px;width:38px;line-height:36px;text-align:center;color:#d2d2d2;}
+        .login-form .layui-form-item input {padding-left:36px;}
+        .captcha {width:60%;display:inline-block;}
+        .captcha-img {display:inline-block;width:34%;float:right;}
+        .captcha-img img {height:34px;border:1px solid #e6e6e6;height:36px;width:100%;}
+        .slider_drag {
+            width: 300px;
+            height: 40px;
+            line-height: 40px;
+            background-color: #e8e8e8;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .slider_bg {
+            width: 40px;
+            height: 100%;
+            position: absolute;
+            background-color: #75CDF9;
+        }
+
+        .slider_text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            user-select: none;
+        }
+
+        .slider_btn {
+            width: 40px;
+            height: 38px;
+            position: absolute;
+            border: 1px solid #ccc;
+            cursor: move;
+            font-family: "宋体";
+            text-align: center;
+            background-color: #fff;
+            user-select: none;
+            color: #666;
+        }
+//模态框
+.dialog-component {
+  border: none;
+  padding: 0;
+  border-radius: 5px;
+}
+/* 通过::backdrop 伪元素定义遮罩层的样式，一般设置背景颜色 */
+.dialog-component::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dialog-main {
+  width: 320px;
+  position: relative;
+}
+
+/* 标题栏 */
+.dialog-header {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  border-bottom: 1px solid #dedede;
+}
+.dialog-title {
+  font-weight: bold;
+}
+
+/* 右上角关闭按钮 */
+.dialog-close-btn {
+  font-size: 14px;
+  position: absolute;
+  display: inline-block;
+  right: 5px;
+  width: auto;
+  height: auto;
+  top: 6px;
+  padding: 5px;
+}
+
+/* 主体内容 */
+.dialog-container {
+  padding: 15px 10px;
+  font-size: 14px;
+}
+
+/* 底部按钮 */
+.dialog-footer {
+  padding: 10px;
+  text-align: right;
+  border-top: 1px solid #dedede;
+}
+
+    </style>
+</head>
+<body>
+
+
+{% if messages %}
+{% for msg in messages %}
+<script type="text/javascript">
+
+  alert('{{msg.message}}')
+
+</script>
+{% endfor %}
+{% endif %}
+<canvas id="canvas"></canvas>
+<div class="layui-container">
+    <div class="admin-login-background">
+        <div class="layui-form login-form">
+            <form class="layui-form" action="#" method="post">
+                 {% csrf_token %}
+                <div class="layui-form-item logo-title">
+                    <h1>Simple_NLP 后台登录</h1>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-icon layui-icon-username" for="username"></label>
+                    <input type="text" name="username" lay-verify="required|account" placeholder="用户名或者邮箱" autocomplete="off" class="layui-input" value="admin">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-icon layui-icon-password" for="password"></label>
+                    <input type="password" name="password" lay-verify="required|password" placeholder="密码" autocomplete="off" class="layui-input" value="123456">
+                </div>
+                <!--  滑块 -->
+                <div class="layui-form-item">
+                <div class="slider_drag">
+                    <div class="slider_bg"></div>
+                    <div class="slider_text" onselectstart="return false" >请拖动滑块解锁</div>
+                    <input type="text" value="0" style = "display:none" name="slider" id="slider" lay-verify="required" class="layui-input">
+                    <div class="slider_btn">&gt;&gt;</div>
+                </div>
+
+                </div>
+                <div class="layui-form-item">
+                    <input type="checkbox" name="rememberMe" value="true" lay-skin="primary" title="记住密码">
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn layui-btn-normal layui-btn-fluid" lay-submit="" lay-filter="login" type="submit">登 入</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="{% static 'Admin/lib/jquery-3.4.1/jquery-3.4.1.min.js' %}" charset="utf-8"></script>
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js' %}" charset="utf-8"></script>
+<script src="{% static 'Admin/lib/jq-module/jquery.particleground.min.js' %}" charset="utf-8"></script>
+
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer;
+
+        // 登录过期的时候，跳出ifram框架
+        if (top.location != self.location) top.location = self.location;
+
+        // 粒子线条背景
+        $(document).ready(function(){
+            $('.layui-container').particleground({
+                dotColor:'#7ec7fd',
+                lineColor:'#7ec7fd'
+            });
+        });
+
+        // 进行登录操作
+        form.on('submit(login)', function (data) {
+            data = data.field;
+            if (data.username == '') {
+                layer.msg('用户名不能为空');
+                return false;
+            }
+            if (data.password == '') {
+                layer.msg('密码不能为空'+data.slider);
+                return false;
+            }
+            if (data.slider == '0'){
+                layer.msg('请拖动滑块验证');
+                return false;
+            }
+            layer.msg(data.slider);
+            return false;
+
+
+            return false;
+        });
+    });
+    var $ = function (selector) {
+            return document.querySelector(selector);
+        },
+        box = $(".slider_drag"),//容器
+        bg = $(".slider_bg"),//背景
+        text = $(".slider_text"),//文字
+        btn = $(".slider_btn"),//滑块
+        success = false,//是否通过验证的标志
+
+        distance = box.offsetWidth - btn.offsetWidth;//滑动成功的宽度（距离）
+
+
+    //二、给滑块注册鼠标按下事件
+    btn.onmousedown = function (e) {
+        //1.鼠标按下之前必须清除掉后面设置的过渡属性
+        btn.style.transition = "";
+        bg.style.transition = "";
+
+        //说明：clientX 事件属性会返回当事件被触发时，鼠标指针向对于浏览器页面(或客户区)的水平坐标。
+
+        //2.当滑块位于初始位置时，得到鼠标按下时的水平位置
+        var e = e || window.event;
+        var downX = e.clientX;
+        //三、给文档注册鼠标移动事件
+        document.onmousemove = function (e) {
+
+            var e = e || window.event;//是为了更好的兼容IE浏览器和非ie浏览器。在ie浏览器中,window.event是全局变量,在非ie中，就需要自己传入一个参数来获取event啦，所以就有了var e = e||window.event
+            //1.获取鼠标移动后的水平位置
+            var moveX = e.clientX;
+
+            //2.得到鼠标水平位置的偏移量（鼠标移动时的位置 - 鼠标按下时的位置）
+            var offsetX = moveX - downX;
+
+            //3.在这里判断一下：鼠标水平移动的距离 与 滑动成功的距离 之间的关系
+            if (offsetX > distance) {
+                offsetX = distance;//如果滑过了终点，就将它停留在终点位置
+            } else if (offsetX < 0) {
+                offsetX = 0;//如果滑到了起点的左侧，就将它重置为起点位置
+            }
+
+            //4.根据鼠标移动的距离来动态设置滑块的偏移量和背景颜色的宽度
+            btn.style.left = offsetX + "px";
+            bg.style.width = offsetX + "px";
+
+            //如果鼠标的水平移动距离 = 滑动成功的宽度
+            if (offsetX == distance) {
+
+                //1.设置滑动成功后的样式
+                text.innerHTML = "验证通过";
+                text.style.color = "#fff";
+                btn.innerHTML = "&radic;";
+                btn.style.color = "green";
+                bg.style.backgroundColor = "lightgreen";
+
+                //2.设置滑动成功后的状态
+                success = true;
+                if(success){
+                    document.getElementById('slider').value='1';
+                }
+                //成功后，清除掉鼠标按下事件和移动事件（因为移动时并不会涉及到鼠标松开事件）
+                btn.onmousedown = null;
+                document.onmousemove = null;
+
+                //3.成功解锁后的回调函数
+                setTimeout(function () {
+                    alert('验证成功！');
+                }, 100);
+            }
+        }
+
+        //四、给文档注册鼠标松开事件
+        document.onmouseup = function (e) {
+            //如果鼠标松开时，滑到了终点，则验证通过
+            if (success) {
+                return;
+            } else {
+                //反之，则将滑块复位（设置了1s的属性过渡效果）
+                btn.style.left = 0;
+                bg.style.width = 0;
+                btn.style.transition = "left 1s ease";
+                bg.style.transition = "width 1s ease";
+            }
+            //只要鼠标松开了，说明此时不需要拖动滑块了，那么就清除鼠标移动和松开事件。
+            document.onmousemove = null;
+            document.onmouseup = null;
+        }
+
+
+    }
+
+
+class Circle {
+    //创建对象
+    //以一个圆为对象
+    //设置随机的 x，y坐标，r半径，_mx，_my移动的距离
+    //this.r是创建圆的半径，参数越大半径越大
+    //this._mx,this._my是移动的距离，参数越大移动
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.r = Math.random() * 10 ;
+        this._mx = Math.random() ;
+        this._my = Math.random() ;
+
+    }
+
+    //canvas 画圆和画直线
+    //画圆就是正常的用canvas画一个圆
+    //画直线是两个圆连线，为了避免直线过多，给圆圈距离设置了一个值，距离很远的圆圈，就不做连线处理
+    drawCircle(ctx) {
+        ctx.beginPath();
+        //arc() 方法使用一个中心点和半径，为一个画布的当前子路径添加一条弧。
+        ctx.arc(this.x, this.y, this.r, 0, 360)
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(204, 204, 204, 0.3)';
+        ctx.fill();
+    }
+
+    drawLine(ctx, _circle) {
+        let dx = this.x - _circle.x;
+        let dy = this.y - _circle.y;
+        let d = Math.sqrt(dx * dx + dy * dy)
+        if (d < 150) {
+            ctx.beginPath();
+            //开始一条路径，移动到位置 this.x,this.y。创建到达位置 _circle.x,_circle.y 的一条线：
+            ctx.moveTo(this.x, this.y);   //起始点
+            ctx.lineTo(_circle.x, _circle.y);   //终点
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(204, 204, 204, 0.3)';
+            ctx.stroke();
+        }
+    }
+
+    // 圆圈移动
+    // 圆圈移动的距离必须在屏幕范围内
+    move(w, h) {
+        this._mx = (this.x < w && this.x > 0) ? this._mx : (-this._mx);
+        this._my = (this.y < h && this.y > 0) ? this._my : (-this._my);
+        this.x += this._mx / 2;
+        this.y += this._my / 2;
+    }
+}
+//鼠标点画圆闪烁变动
+class currentCirle extends Circle {
+    constructor(x, y) {
+        super(x, y)
+    }
+
+    drawCircle(ctx) {
+        ctx.beginPath();
+        //注释内容为鼠标焦点的地方圆圈半径变化
+        //this.r = (this.r < 14 && this.r > 1) ? this.r + (Math.random() * 2 - 1) : 2;
+        this.r = 8;
+        ctx.arc(this.x, this.y, this.r, 0, 360);
+        ctx.closePath();
+        //ctx.fillStyle = 'rgba(0,0,0,' + (parseInt(Math.random() * 100) / 100) + ')'
+        ctx.fillStyle = 'rgba(204, 204, 204, 0.6)'
+        ctx.fill();
+
+    }
+}
+//更新页面用requestAnimationFrame替代setTimeout
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+let canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d');
+let w = canvas.width = canvas.offsetWidth;
+let h = canvas.height = canvas.offsetHeight;
+let circles = [];
+let current_circle = new currentCirle(0, 0)
+
+let draw = function () {
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < circles.length; i++) {
+        circles[i].move(w, h);
+        circles[i].drawCircle(ctx);
+        for (j = i + 1; j < circles.length; j++) {
+            circles[i].drawLine(ctx, circles[j])
+        }
+    }
+    if (current_circle.x) {
+        current_circle.drawCircle(ctx);
+        for (var k = 1; k < circles.length; k++) {
+            current_circle.drawLine(ctx, circles[k])
+        }
+    }
+    requestAnimationFrame(draw)
+}
+
+let init = function (num) {
+    for (var i = 0; i < num; i++) {
+        circles.push(new Circle(Math.random() * w, Math.random() * h));
+    }
+    draw();
+}
+window.addEventListener('load', init(60));
+window.onmousemove = function (e) {
+    e = e || window.event;
+    current_circle.x = e.clientX;
+    current_circle.y = e.clientY;
+}
+window.onmouseout = function () {
+    current_circle.x = null;
+    current_circle.y = null;
+
+};
+
+</script>
+
+
+</body>
+</html>

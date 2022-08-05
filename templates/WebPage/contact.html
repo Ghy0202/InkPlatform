@@ -1,0 +1,29 @@
+{% extends 'WebPage/base.html' %}
+
+{% block main_body %}
+<main class="lyear-layout-content">
+    <div class="container-fluid">
+<div class="card">
+<div class="card-body">
+    <label>反馈交流</label>
+<!--PC版-->
+<!--PC版-->
+<div id="SOHUCS" sid="ghy" ></div>
+<script charset="utf-8" type="text/javascript" src="https://cy-cdn.kuaizhan.com/upload/changyan.js" ></script>
+<script type="text/javascript">
+window.changyan.api.config({
+appid: 'cyw11rJ0R',
+conf: 'prod_43b2db9047bba45a48f2a9bdb4b5a718'
+});
+</script>
+  <a href="#SOHUCS" id="changyan_count_unit"></a>//评论数
+<a href="#SOHUCS" id="changyan_parti_unit"></a>//参与数
+<script type="text/javascript" src="https://cy-cdn.kuaizhan.com/upload/plugins/plugins.count.js">
+</script>
+  </div>
+      </div>
+    </div>
+</main>
+
+
+{% endblock %}

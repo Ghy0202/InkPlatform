@@ -1,0 +1,103 @@
+{% extends 'WebPage/base.html' %}
+{% load static from static %}
+{% block main_body %}
+<main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card" {% if abstract %}style="display: none"{% endif %}>
+              <div class="card-body">
+                <!--提交表单-->
+                <form action="{% url 'do_Abstract_t5'%}" method="post" class="row">
+                    {% csrf_token %}
+                  <div class="form-group col-md-12">
+                    <label for="seo_description">输入一段中文文本，自动在线为您生成摘要</label>
+                    <textarea class="form-control" id="seo_description" name="sentence" rows="5" type="text" ></textarea>
+                  </div>
+
+                  <div class="form-group col-md-12">
+                    <button type="submit" class="btn btn-primary ajax-post" target-form="add-form">生成摘要</button>
+                    <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);return false;">返 回</button>
+                  </div>
+                </form>
+              </div>
+              </div>
+              <!--展示词性分析结果-->
+              {% if abstract %}
+              <div class="card">
+                  <div class="card-body">
+                      <label>原始句子</label>
+                      <p>{{sentence}}</p>
+                  </div>
+              </div>
+            <div class="card">
+                <label>&ensp;&ensp;&ensp;摘要生成结果</label>
+              <div class="card-body">
+                    {% if abstract %}
+                  <p>{{abstract}}</p>
+                    {% endif %}
+              </div>
+            {% endif %}
+
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+<!--模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"  aria-hidden="true" data-backdrop="true" >
+		<div class="modal-dialog" style="display: outline-block;"><span style="font-family: Arial, Helvetica, sans-serif;"><!--设置模态框属性--></span>
+
+			<div class="modal-content" style="width: 400px;height: 200px;margin-top: 220px;margin-left: 130px;"><!--设置模态框content属性-->
+				<div class="modal-header" style="text-align:left;font-size: small;height: 8px;margin-bottom: 5px;">
+					<!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						×
+					</button>-->
+					<p style="margin-top: -10px;">Tips</p>
+				</div>
+				<div class="modal-body" style="text-align: center;font-size: large;height: 18px;">
+                    <img src="{% static 'WebPage/images/loading.gif' %}" style="zoom:10%;">
+					<p style="margin-top: -15px;">正在全力为您加载，请耐心等待...</p>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal -->
+</div>
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script>
+//生成摘要
+$('#generate_abstract').click(function(){
+    var content = $("#editor-edit").val();
+    $.ajax({
+        url:'/writer_generate_t5_abstract',
+        type:'post',
+        headers:{'X-CSRFToken': "{{ csrf_token }}"},
+        data:{'text':content},
+        beforeSend: function(){       //ajax发送请求时的操作，得到请求结果前有效
+						$('#myModal').modal({
+							backdrop:'static'      //<span style="color:#FF6666;">设置模态框之外点击无效</span>
+						});
+						$('#myModal').modal('show');   //弹出模态框
+					},
+					complete: function(){            //ajax得到请求结果后的操作
+						$('#myModal').modal('hide');  //隐藏模态框
+		},
+        success:function(data){
+
+
+                document.getElementById("abstract").innerHTML=data.abstract;
+                console.log(data);
+                layer.msg(data.status,{icon:1});
+        }
+    });
+  });
+
+    </script>
+
+
+{% endblock %}

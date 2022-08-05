@@ -1,0 +1,337 @@
+{% load static from static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Simple_NLP后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="{% static 'Admin/lib/layui-v2.6.3/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'Admin/lib/font-awesome-4.7.0/css/font-awesome.min.css'%}" media="all">
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+    <link rel="stylesheet" href="{% static 'Admin/css/public.css'%}" media="all">
+    <style>
+        .layui-card {border:1px solid #f2f2f2;border-radius:5px;}
+        .icon {margin-right:10px;color:#1aa094;}
+        .icon-cray {color:#ffb800!important;}
+        .icon-blue {color:#1e9fff!important;}
+        .icon-tip {color:#ff5722!important;}
+        .layuimini-qiuck-module {text-align:center;margin-top: 10px}
+        .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
+        .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
+        .welcome-module {width:100%;height:210px;}
+        .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+        .panel-body {padding:10px}
+        .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
+        .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+        .layui-red {color:red}
+        .main_btn > p {height:40px;}
+        .layui-bg-number {background-color:#F8F8F8;}
+        .layuimini-notice:hover {background:#f6f6f6;}
+        .layuimini-notice {padding:7px 16px;clear:both;font-size:12px !important;cursor:pointer;position:relative;transition:background 0.2s ease-in-out;}
+        .layuimini-notice-title,.layuimini-notice-label {
+            padding-right: 70px !important;text-overflow:ellipsis!important;overflow:hidden!important;white-space:nowrap!important;}
+        .layuimini-notice-title {line-height:28px;font-size:14px;}
+        .layuimini-notice-extra {position:absolute;top:50%;margin-top:-8px;right:16px;display:inline-block;height:16px;color:#999;}
+    </style>
+</head>
+<!--头部导航栏-->
+<ul class="layui-nav">
+  <li class="layui-nav-item">
+      <p>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</p>
+<!--  </li>-->
+<!--    <li class="layui-nav-item">-->
+<!--    <a href="">控制台<span class="layui-badge">9</span></a>-->
+<!--  </li>-->
+  <li class="layui-nav-item">
+    <a href="">个人中心<span class="layui-badge-dot"></span></a>
+  </li>
+  <li class="layui-nav-item">
+    <a href=""><img src="{{request.session.adminuser.avatar_path}}" class="layui-nav-img" onerror="this.src='{% static 'images/Avatar1.png'%}'">我</a>
+    <dl class="layui-nav-child">
+      <dd><a href="javascript:;">修改信息</a></dd>
+      <dd><a href="/admin/admin_logout/">退了</a></dd>
+    </dl>
+  </li>
+</ul>
+<!--头部导航栏-->
+    <!--侧边栏-->
+<!--侧边栏-->
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md8">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-warning icon"></i>数据统计</div>
+                            <div class="layui-card-body">
+                                <div class="welcome-module">
+                                    <div class="layui-row layui-col-space10">
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                   <div class="panel-title">
+
+                                                        <h5>注册用户数</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins">{{user_num}}</h1>
+                                                        <small>当前分类总记录数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-cyan">实时</span>
+                                                        <h5>管理员人数</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins">{{manage_num}}</h1>
+                                                        <small>当前分类总记录数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+
+                                                        <h5>爬虫数据统计</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins">{{scrapy_num}}</h1>
+                                                        <small>当前总站用户爬虫次数统计</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-green">实时</span>
+                                                        <h5>实验数据统计</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins">{{exp_num}}</h1>
+                                                        <small>当前总站进行实验次数统计</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-credit-card icon icon-blue"></i>快捷入口</div>
+                            <div class="layui-card-body">
+                                <div class="welcome-module">
+                                    <div class="layui-row layui-col-space10 layuimini-qiuck">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="/admin/admin_userInfo/" data-title="用户管理" data-icon="fa fa-window-maximize">
+                                                <i class="fa fa-window-maximize"></i>
+                                                <cite>用户管理</cite>
+                                            </a>
+                                        </div>
+<!--                                        <div class="layui-col-xs3 layuimini-qiuck-module">-->
+<!--                                            <a href="/admin/admin_note_Info/"  data-title="系统公告" data-icon="fa fa-cube">-->
+<!--                                                <i class="fa fa-gears"></i>-->
+<!--                                                <cite>系统公告</cite>-->
+<!--                                            </a>-->
+<!--                                        </div>-->
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="/admin/admin_scrapy_data/"  data-title="表格示例" data-icon="fa fa-file-text">
+                                                <i class="fa fa-file-text"></i>
+                                                <cite>爬虫数据</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="/admin/abstract_index/" data-title="图标列表" data-icon="fa fa-dot-circle-o">
+                                                <i class="fa fa-dot-circle-o"></i>
+                                                <cite>摘要数据</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="/admin/title_index/" data-title="表单示例" data-icon="fa fa-calendar">
+                                                <i class="fa fa-calendar"></i>
+                                                <cite>标题数据</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="/admin/sou/" data-title="百度搜索" data-icon="fa fa-search">
+                                                <i class="fa fa-search"></i>
+                                                <cite>资讯搜索</cite>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--报表统计-->
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计</div>
+                            <div class="layui-card-body">
+                                <div id="user_data" style="width:900px; height:300px;"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md4">
+
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-bullhorn icon icon-tip"></i>系统公告</div>
+                    <div class="layui-card-body layui-text">
+                        <div class="layuimini-notice">
+                            <div class="layuimini-notice-title"><b>点墨·智能创作平台</b>新功能上线</div>
+                            <div class="layuimini-notice-extra">2022-07-6 23:06</div>
+                            <div class="layuimini-notice-content layui-hide">
+                                新上线数据查看模块<br>
+                                用户可以通过点击查看网站流量。<br>
+                                支持多tab，可以打开多窗口。<br>
+                                失效以及报错菜单无法直接打开，并给出弹出层提示完美的线上用户体验。<br>
+                                对一些已知bug进行修复<br>
+                                刷新页面会保留当前的窗口，并且会定位当前窗口对应左侧菜单栏。<br>
+                                移动端的友好支持。<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-fire icon"></i>版本信息</div>
+                    <div class="layui-card-body layui-text">
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="100">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <td>产品名称</td>
+                                <td>
+                                    点墨·智能创作平台
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>当前版本</td>
+                                <td>v1.0.0</td>
+                            </tr>
+                            <tr>
+                                <td>主要特色</td>
+                                <td>UI界面美观 / 响应迅速 / 正确率高 / 交互体验友好</td>
+                            </tr>
+                            <tr>
+                                <td>演示地址</td>
+                                <td>
+                                    bilibli:<a href="https://search.bilibili.com/all?keyword=%E8%BD%AF%E4%BB%B6%E6%9D%AF&from_source=webtop_search&spm_id_from=333.1007" target="_blank">点墨V1.0演示</a><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>下载地址</td>
+                                <td>
+                                    v1.0.0版本:<a href="https://gitee.com/moumougao/simple_-nlp_for_-cup" target="_blank">gitee</a><br>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-paper-plane-o icon"></i>产品介绍</div>
+                    <div class="layui-card-body layui-text layadmin-text">
+                        <p>“点墨·智能创作平台” 是一款基于Django+LayUI+Bootstrap开发的智能创作平台</p>
+                        <p>数据采用轻量化的MySQL进行存储</p>
+                        <p>基于深度学习中的bert模型，我们提出了改进版的模型以适应中文摘要、中文标题生成任务</p>
+                        <p>同时提供轻量级爬虫功能，使用户可以自行下载指定类型的新闻数据进行自主实验</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'Admin/lib/layui-v2.6.3/layui.js'%}" charset="utf-8"></script>
+<script src="/static/Admin/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+
+<script src="https://cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
+
+<script>
+    layui.use(['layer', 'miniTab','echarts'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            miniTab = layui.miniTab,
+            echarts = layui.echarts;
+
+        miniTab.listen();
+
+        /**
+         * 查看公告信息
+         **/
+        $('body').on('click', '.layuimini-notice', function () {
+            var title = $(this).children('.layuimini-notice-title').text(),
+                noticeTime = $(this).children('.layuimini-notice-extra').text(),
+                content = $(this).children('.layuimini-notice-content').html();
+            var html = '<div style="padding:15px 20px; text-align:justify; line-height: 22px;border-bottom:1px solid #e2e2e2;background-color: #2f4056;color: #ffffff">\n' +
+                '<div style="text-align: center;margin-bottom: 20px;font-weight: bold;border-bottom:1px solid #718fb5;padding-bottom: 5px"><h4 class="text-danger">' + title + '</h4></div>\n' +
+                '<div style="font-size: 12px">' + content + '</div>\n' +
+                '</div>\n';
+            parent.layer.open({
+                type: 1,
+                title: '系统公告'+'<span style="float: right;right: 1px;font-size: 12px;color: #b1b3b9;margin-top: 1px">'+noticeTime+'</span>',
+                area: '300px;',
+                shade: 0.8,
+                id: 'layuimini-notice',
+                btn: ['查看', '取消'],
+                btnAlign: 'c',
+                moveType: 1,
+                content:html,
+                success: function (layero) {
+                    var btn = layero.find('.layui-layer-btn');
+                    btn.find('.layui-layer-btn0').attr({
+                        href: 'https://gitee.com/zhongshaofa/layuimini',
+                        target: '_blank'
+                    });
+                }
+            });
+        });
+});
+//统计注册用户数量
+var chart=echarts.init(document.getElementById('user_data'),'white',{renderer: 'canvas'});
+    $(
+        function(){
+        fetchData(chart);
+        }
+    );
+
+    function fetchData(){
+        $.ajax({
+        type:'GET',
+        url:'http://127.0.0.1:8000/admin/user_data/',
+        dataType:'json',
+        success:function(result){
+            chart.setOption(result.data);
+        }
+    });
+    }
+</script>
+</body>
+</html>
+

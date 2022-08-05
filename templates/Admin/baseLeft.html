@@ -1,0 +1,109 @@
+{% load static from static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Simple_NLP后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="{% static 'Admin/lib/layui-v2.6.3/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'Admin/lib/font-awesome-4.7.0/css/font-awesome.min.css'%}" media="all">
+    <link rel="stylesheet" href="{% static 'Admin/css/public.css'%}" media="all">
+</head>
+<div class="layui-side layui-bg-black">
+  <div class="layui-side-scroll">
+
+    <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+    <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+<!--      <li class="layui-nav-item layui-nav-itemed">-->
+
+          <li class="layui-nav-item">
+        <a class="" href="javascript:;"><i class="fa fa-user-circle-o fa-lg"></i> <span >我的信息</span></a>
+        <dl class="layui-nav-child">
+          <dd><a href="javascript:;"><i class="fa fa-list fa-lg"></i> <span >修改个人信息</span></a></dd>
+          <dd><a href="javascript:;"><i class="fa fa-clipboard fa-lg"></i> <span >安全退出</span></a></dd>
+        </dl>
+      </li>
+        <li class="layui-nav-item">
+        <a href="javascript:;"><i class="layui-icon layui-icon-note"></i> <span >系统公告</span></a>
+        <dl class="layui-nav-child">
+          <dd><a href="/admin/admin_note_Info/" ><i class="layui-icon layui-icon-addition"></i> <span >添加公告</span></a></dd>
+          <dd><a href="javascript:;"><i class="fa fa-check-square fa-lg"></i> <span >查看公告</span></a></dd>
+
+        </dl>
+      </li>
+      <li class="layui-nav-item">
+        <a href="javascript:;"><i class="fa fa-vcard fa-lg"></i> <span >用户管理</span></a>
+        <dl class="layui-nav-child">
+          <dd><a href="/admin/admin_userInfo/"><i class="fa fa-th-list fa-lg"></i> <span >用户列表</span></a></dd>
+          <dd><a href="/admin/add_user/"><i class="fa fa-user-o fa-lg"></i> <span >添加用户</span></a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item">
+        <a href="javascript:;"><i class="fa fa-diamond fa-lg"></i> <span >数据管理</span></a>
+        <dl class="layui-nav-child">
+          <dd><a href="/admin/abstract_index/"><i class="fa fa-address-book fa-lg"></i> <span >摘要数据</span></a></dd>
+          <dd><a href="/admin/title_index/"><i class="fa fa-check-square fa-lg"></i> <span >标题数据</span></a></dd>
+            <dd><a href="/admin/admin_scrapy_data/"><i class="fa fa-check-square fa-lg"></i> <span >爬虫数据</span></a></dd>
+        </dl>
+      </li>
+        <li class="layui-nav-item">
+        <a href="javascript:;"><i class="fa fa-dropbox"></i> <span >其他</span></a>
+        <dl class="layui-nav-child">
+          <dd><a href="/admin/admin_index/"><i class="fa fa-address-book fa-lg"></i> <span >返回首页</span></a></dd>
+
+        </dl>
+      </li>
+
+    </ul>
+  </div>
+</div>
+
+<body>
+
+   {% block main_body  %}
+
+    {% endblock %}
+</body>
+<script>
+  //JavaScript代码区域
+  layui.use('element', function(){
+    var element = layui.element;
+  });
+  var isShow = true;  //定义一个标志位
+  $('.kit-side-fold').click(function(){
+    //选择出所有的span，并判断是不是hidden
+    $('.layui-nav-item span').each(function(){
+      if($(this).is(':hidden')){
+        $(this).show();
+      }else{
+        $(this).hide();
+      }
+    });
+    //判断isshow的状态
+    if(isShow){
+      $('.layui-side.layui-bg-black').width(60); //设置宽度
+      $('.kit-side-fold i').css('margin-right', '70%');  //修改图标的位置
+      //将footer和body的宽度修改
+      $('.layui-body').css('left', 60+'px');
+      $('.layui-footer').css('left', 60+'px');
+      //将二级导航栏隐藏
+      $('dd span').each(function(){
+        $(this).hide();
+      });
+      //修改标志位
+      isShow =false;
+    }else{
+      $('.layui-side.layui-bg-black').width(200);
+      $('.kit-side-fold i').css('margin-right', '10%');
+      $('.layui-body').css('left', 200+'px');
+      $('.layui-footer').css('left', 200+'px');
+      $('dd span').each(function(){
+        $(this).show();
+      });
+      isShow =true;
+    }
+  });
+</script>
+</html>
